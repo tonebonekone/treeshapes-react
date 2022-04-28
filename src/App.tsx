@@ -1,7 +1,20 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 function App() {
+  const [windowW, setWidth] = useState(window.innerWidth)
+  const [windowH, setHeight] = useState(window.innerHeight)
+
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
+
+  useEffect(() => {
+    window.addEventListener('resize', updateWidthAndHeight)
+    return () => window.removeEventListener('resize', updateWidthAndHeight)
+  }, [])
+
+  function updateWidthAndHeight() {
+    setWidth(window.innerWidth)
+    setHeight(window.innerHeight)
+  }
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -67,9 +80,9 @@ function App() {
     createRect(0, 0, canvas.width, canvas.height, '#EEE')
 
     drawBranch(startX, startY, height, thickness, 0, Math.PI / 2)
-  }, [])
+  }, [windowW, windowH])
 
-  return <canvas ref={canvasRef} width={window.innerWidth} height={window.innerHeight} onClick={(e) => {}} />
+  return <canvas ref={canvasRef} width={windowW} height={windowH} onClick={(e) => {}} />
 }
 
 export default App
