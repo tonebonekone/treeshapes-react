@@ -1,21 +1,23 @@
+import { Grid } from '@mui/material'
 import { useEffect, useRef, useState } from 'react'
+import InputSlider from './components/InputSlider'
 
 function App() {
+  // CANVAS
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const [windowW, setWidth] = useState(window.innerWidth)
   const [windowH, setHeight] = useState(window.innerHeight)
 
-  const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  // CONSTANTS
+  const [thickness, setThickness] = useState(0.5)
+  const [maxDepth, setMaxDepth] = useState(7)
+  const [branchPropagation, setBranchPropagation] = useState(5)
 
-  useEffect(() => {
-    window.addEventListener('resize', updateWidthAndHeight)
-    return () => window.removeEventListener('resize', updateWidthAndHeight)
-  }, [])
+  const handleThickness = (val: number) => setThickness(val)
+  const handleMaxDepth = (val: number) => setMaxDepth(val)
+  const handleBranchPropagation = (val: number) => setBranchPropagation(val)
 
-  function updateWidthAndHeight() {
-    setWidth(window.innerWidth)
-    setHeight(window.innerHeight)
-  }
-
+  // DRAW
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -26,10 +28,6 @@ function App() {
     const startX = canvas.width / 2
     const startY = canvas.height - 100
     const height = (canvas.height * 7) / 24
-
-    const thickness = 0.5
-    const maxDepth = 8
-    const branchPropagation = 5
 
     function createRect(x: number, y: number, w: number, h: number, color: string) {
       ctx.fillStyle = color
@@ -80,9 +78,38 @@ function App() {
     createRect(0, 0, canvas.width, canvas.height, '#EEE')
 
     drawBranch(startX, startY, height, thickness, 0, Math.PI / 2)
-  }, [windowW, windowH])
+  }, [windowW, windowH, thickness, maxDepth, branchPropagation])
 
-  return <canvas ref={canvasRef} width={windowW} height={windowH} onClick={(e) => {}} />
+  // WATCH CANVAS
+  useEffect(() => {
+    window.addEventListener('resize', updateWidthAndHeight)
+    return () => window.removeEventListener('resize', updateWidthAndHeight)
+  }, [])
+
+  function updateWidthAndHeight() {
+    setWidth(window.innerWidth)
+    setHeight(window.innerHeight)
+  }
+
+  return (
+    <Grid container>
+      <Grid container sx={{ flex: 1 }}>
+        <InputSlider label="Thickness" value={thickness} step={0.1} min={0.1} max={2} emitChange={handleThickness} />
+        <InputSlider label="Max Depth" value={maxDepth} step={1} min={1} max={7} emitChange={handleMaxDepth} />
+        <InputSlider
+          label="Branch Propagation"
+          value={branchPropagation}
+          step={1}
+          min={1}
+          max={10}
+          emitChange={handleBranchPropagation}
+        />
+      </Grid>
+      <Grid container sx={{ flex: 1 }}>
+        <canvas ref={canvasRef} width={windowW} height={windowH} />
+      </Grid>
+    </Grid>
+  )
 }
 
 export default App
