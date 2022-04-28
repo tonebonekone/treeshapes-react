@@ -38,7 +38,7 @@ export default function InputSlider({ label, value, step, min, max, emitChange }
   }
 
   return (
-    <Box sx={{ width: 250 }}>
+    <Box sx={{ width: '100%' }}>
       <Typography id={`input-slider-${label}`} gutterBottom>
         {label}
       </Typography>
@@ -67,6 +67,7 @@ export default function InputSlider({ label, value, step, min, max, emitChange }
               type: 'number',
               'aria-labelledby': `input-slider-${label}`,
             }}
+            sx={{ width: '60px' }}
           />
         </Grid>
       </Grid>
